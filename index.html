@@ -1,31 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modal con Multiselect</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="app.js"></script>
-    </head>
-    <body>
+</head>
+<body>
 
-        <style>
-
-        .list-group-item {
+<style>
+    .list-group-item {
         cursor: pointer;
-        }
+    }
+</style>
 
-        </style>
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#eventoModal">
+    Abrir Modal Principal
+</button>
 
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#eventoModal">
-        Abrir Modal Principal
-        </button>
-
-        <div class="modal fade" id="eventoModal" tabindex="-1" aria-labelledby="eventoModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
+<div class="modal fade" id="eventoModal" tabindex="-1" aria-labelledby="eventoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="eventoModalLabel">Búsqueda de Clientes</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -51,7 +48,6 @@
                                 <option value="Asesor 1">Asesor 1</option>
                                 <option value="Asesor 2">Asesor 2</option>
                             </select>
-                            <!-- Botón "+" al lado del select de asesores -->
                             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#vendedorModal">
                                 + <span id="cantidadSeleccionados" class="badge bg-light text-dark">0</span>
                             </button>
@@ -72,7 +68,6 @@
             
                 <button id="guardarEvento" class="btn btn-primary">Guardar Evento</button>
             
-                <!-- Tabla de eventos -->
                 <table class="table mt-4">
                     <thead>
                         <tr>
@@ -89,44 +84,113 @@
                     </tbody>
                 </table>
             </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="vendedorModal" tabindex="-1" aria-labelledby="vendedorModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="vendedorModalLabel">Seleccionar Vendedores</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-        </div>
-        </div>
-        
-        <!-- Modal de selección de vendedores (fuera del modal principal) -->
-        <div class="modal fade" id="vendedorModal" tabindex="-1" aria-labelledby="vendedorModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="vendedorModalLabel">Seleccionar Vendedores</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Lista de vendedores:</h6>
+                        <ul id="listaVendedores" class="list-group">
+                            <li class="list-group-item">Vendedor 1</li>
+                            <li class="list-group-item">Vendedor 2</li>
+                            <li class="list-group-item">Vendedor 3</li>
+                        </ul>
                     </div>
-                    <div class="modal-body">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <h6>Lista de vendedores:</h6>
-                                <ul id="listaVendedores" class="list-group">
-                                    <li class="list-group-item">Vendedor 1</li>
-                                    <li class="list-group-item">Vendedor 2</li>
-                                    <li class="list-group-item">Vendedor 3</li>
-                                </ul>
-                            </div>
-                            <div class="col-md-6">
-                                <h6>Vendedores seleccionados:</h6>
-                                <ul id="vendedoresSeleccionados" class="list-group">
-                                    <!-- Aquí se agregarán los seleccionados -->
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button id="addVendedores" type="button" class="btn btn-primary" data-bs-dismiss="modal">Agregar Vendedores</button>
+                    <div class="col-md-6">
+                        <h6>Vendedores seleccionados:</h6>
+                        <ul id="vendedoresSeleccionados" class="list-group">
+                            <!-- Aquí se agregarán los seleccionados -->
+                        </ul>
                     </div>
                 </div>
             </div>
+            <div class="modal-footer">
+                <button id="addVendedores" type="button" class="btn btn-primary" data-bs-dismiss="modal">Agregar Vendedores</button>
+            </div>
         </div>
+    </div>
+</div>
 
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-    </body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    let vendedoresSeleccionados = [];
+
+    // Al hacer clic en "Agregar Vendedores", selecciona los vendedores y actualiza la cantidad
+    document.getElementById('addVendedores').addEventListener('click', function () {
+        const vendedores = document.querySelectorAll('#listaVendedores .list-group-item.active');
+
+        vendedores.forEach(vendedor => {
+            // Agrega el vendedor a la lista de seleccionados
+            vendedoresSeleccionados.push(vendedor.textContent);
+            // Actualiza la lista de vendedores seleccionados en el modal principal
+            const li = document.createElement('li');
+            li.className = 'list-group-item';
+            li.textContent = vendedor.textContent;
+            document.getElementById('vendedoresSeleccionados').appendChild(li);
+            // Elimina al vendedor de la lista disponible
+            vendedor.remove();
+        });
+
+        // Actualiza la cantidad de vendedores seleccionados en el botón
+        document.getElementById('cantidadSeleccionados').textContent = vendedoresSeleccionados.length;
+        
+        // Actualiza el modal principal para reflejar los cambios
+        const eventoModal = new bootstrap.Modal(document.getElementById('eventoModal'));
+        eventoModal.show();
+    });
+
+    // Función para marcar y desmarcar vendedores
+    document.querySelectorAll('#listaVendedores .list-group-item').forEach(item => {
+        item.addEventListener('click', function () {
+            this.classList.toggle('active');
+        });
+    });
+
+    // Al hacer clic en "Guardar Evento", guarda los datos de los asesores y vendedores
+    document.getElementById('guardarEvento').addEventListener('click', function () {
+        const asesor = document.getElementById('asesor').value;
+        const horaInicio = document.getElementById('horaInicio').value;
+        const horaFin = document.getElementById('horaFin').value;
+        const evento = document.getElementById('evento').value;
+        const tipoEvento = document.getElementById('tipoEvento').value;
+
+        // Envía los datos de los vendedores seleccionados y el asesor
+        const eventoData = {
+            asesor: asesor,
+            vendedores: vendedoresSeleccionados,
+            horaInicio: horaInicio,
+            horaFin: horaFin,
+            evento: evento,
+            tipoEvento: tipoEvento
+        };
+
+        console.log('Datos del evento:', eventoData);
+
+        // Agregar los datos del evento a la tabla
+        const nuevaFila = document.createElement('tr');
+        nuevaFila.innerHTML = `
+            <td>${asesor}</td>
+            <td>${horaInicio}</td>
+            <td>${horaFin}</td>
+            <td>${evento}</td>
+            <td>${tipoEvento}</td>
+            <td>No leído</td>
+        `;
+        document.getElementById('tablaEventos').appendChild(nuevaFila);
+
+        // Aquí podrías hacer una petición AJAX o Fetch para enviar los datos al backend
+    });
+</script>
+
+</body>
 </html>
